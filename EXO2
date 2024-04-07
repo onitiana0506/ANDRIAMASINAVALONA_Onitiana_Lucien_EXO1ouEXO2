@@ -1,1 +1,71 @@
+def print_karnaugh_map(variables, table):
+    num_vars = len(variables)
+    rows = 2 ** (num_vars // 2)
+    cols = 2 ** (num_vars - num_vars // 2)
+    
+    print('   | ' + ' | '.join(variables[num_vars // 2:]) + ' |')
+    print('---+' + '---+' * (cols - 1) + '---')
+    
+    for i in range(rows):
+        row_str = ' {} |'.format(variables[i])
+        for j in range(cols):
+            row_str += ' {}'.format(table[i][j])
+        print(row_str)
+
+def find_contiguous_ones(table):
+    groups = []
+    rows = len(table)
+    cols = len(table[0])
+    
+    for i in range(rows):
+        for j in range(cols):
+            if table[i][j] == '1':
+                group = [(i, j)]
+                table[i][j] = 'X'
+                for di, dj in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    new_i, new_j = i + di, j + dj
+                    if 0 <= new_i < rows and 0 <= new_j < cols and table[new_i][new_j] == '1':
+                        group.append((new_i, new_j))
+                        table[new_i][new_j] = 'X'
+                groups.append(group)
+    return groups
+
+def simplify_group(group, variables):
+    num_vars = len(variables)
+    if len(group) == 1:
+        row, col = group[0]
+        return variables[row] + variables[num_vars // 2 + col]
+    else:
+        row_diff = group[-1][0] - group[0][0]
+        col_diff = group[-1][1] - group[0][1]
+        if row_diff == 0:
+            return variables[group[0][0]] + ('*' if col_diff == 1 else '~') + variables[num_vars // 2 + group[0][1]]
+        else:
+            return ('*' if row_diff == 1 else '~') + variables[group[0][0]] + variables[num_vars // 2 + group[0][1]]
+
+def karnaugh_minimization(expression):
+    variables = sorted(set([char for char in expression if char.isalpha()]))
+    num_vars = len(variables)
+    rows = 2 ** (num_vars // 2)
+    cols = 2 ** (num_vars - num_vars // 2)
+    
+    truth_table = [[int(eval(expression, {variables[j]: (i >> (num_vars - 1 - j)) & 1 for j in range(num_vars)})) for i in range(2 ** num_vars)] for _ in range(2 ** num_vars)]
+    
+    print("Carte de Karnaugh:")
+    print_karnaugh_map(variables[num_vars // 2:], truth_table[:rows])
+    print("\nGroupes de 1 sur la carte de Karnaugh:")
+    groups = find_contiguous_ones(truth_table)
+    for group in groups:
+        print(group)
+    
+    simplified_groups = [simplify_group(group, variables) for group in groups]
+    return ' + '.join(simplified_groups)
+
+def main():
+    expression = input("Entrez la fonction logique en utilisant les opérateurs Python (& pour l'ET, | pour l'OU, ~ pour la négation): ")
+    minimized_expression = karnaugh_minimization(expression)
+    print("\nExpression minimisée:", minimized_expression)
+
+if __name__ == "__main__":
+    main()
 
