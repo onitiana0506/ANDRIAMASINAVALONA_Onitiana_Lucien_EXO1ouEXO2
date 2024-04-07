@@ -1,0 +1,61 @@
+from itertools import product
+def eval_function(expression, values):
+    for var, val in values.items():
+        expression = expression.replace(var, str(val))
+    return eval(expression)
+
+def genere_table_verite(variables, expression):
+    table = []
+    for values in product([0, 1], repeat=len(variables)):
+        value_dict = dict(zip(variables, values))
+        result = eval_function(expression, value_dict)
+        table.append((values, result))
+    return table
+
+def get_canonical_forms(variables, truth_table):
+    sums = []
+    products = []
+    for values, result in truth_table:
+        term = []
+        for var, val in zip(variables, values):
+            print(variables)
+            print(values)
+            if val == 0:
+                term.append('~' + var)
+            else:
+                term.append(var)
+        term = ' & '.join(term)
+        if result == 1:
+            sums.append(term)
+        else:
+            products.append('~(' + term + ')')
+
+    sum_of_products = ' | '.join(sums)
+    product_of_sums = ' & '.join(products)
+
+    return sum_of_products, product_of_sums
+
+def main():
+    expression = input("Entrez la fonction logique en utilisant les opérateurs Python (& pour l'ET, | pour l'OU, ~ pour la négation): ")
+    variables = sorted(set([char for char in expression if char.isalpha()]))
+    print(f"Expression : ")
+    print(expression)
+    print(f"Variables : ")
+    print(f"{variables}")
+    truth_table = genere_table_verite(variables, expression)
+    print(truth_table)
+    print("Table de vérité:")
+    #Affichage entete tableau A | B | C | RESULTAT
+    header = ' | '.join(variables + ['Resultat'])
+    print(header)
+    # souligné le header par "--------------------"
+    print('-' * len(header))
+    for values, result in truth_table:
+        print(' | '.join([str(val) for val in values] + [str(result)]))
+
+    forme_somme, forme_produit = get_canonical_forms(variables, truth_table)
+    print("\nForme canonique somme:", forme_somme)
+    print("Forme canonique produit:", forme_produit)
+    
+if __name__ == "__main__":
+    main()
