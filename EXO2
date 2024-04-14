@@ -62,10 +62,10 @@ def karnaugh_minimization(expression):
     return ' + '.join(simplified_groups)
 
 def main():
-    expression = input("Entrez la fonction logique en utilisant les opérateurs Python (& pour l'ET, | pour l'OU, ~ pour la négation): ")
+    #expression = input("Entrez la fonction logique en utilisant les opérateurs Python (& pour l'ET, | pour l'OU, ~ pour la négation): ")
+    expression = "~A & ~B & ~C | ~A & B & ~C | ~A & ~B & C | A & ~B & ~C | A & ~B & C"
     minimized_expression = karnaugh_minimization(expression)
     print("\nExpression minimisée:", minimized_expression)
 
 if __name__ == "__main__":
     main()
-
