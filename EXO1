@@ -36,7 +36,8 @@ def get_canonical_forms(variables, truth_table):
     return sum_of_products, product_of_sums
 
 def main():
-    expression = input("Entrez la fonction logique en utilisant les opérateurs Python (& pour l'ET, | pour l'OU, ~ pour la négation): ")
+    #expression = input("Entrez la fonction logique en utilisant les opérateurs Python (& pour l'ET, | pour l'OU, ~ pour la négation): ")
+    expression = "A & C | A & ~B | B & ~C"
     variables = sorted(set([char for char in expression if char.isalpha()]))
     print(f"Expression : ")
     print(expression)
